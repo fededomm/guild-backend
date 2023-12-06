@@ -18,3 +18,10 @@ func (r *Rest) GetAll(c *gin.Context) {
 		"message": "pong",
 	})
 }
+
+func (r *Rest) PostOne(c *gin.Context) {
+	
+	c.JSON(201, gin.H{
+		"message": "created",
+	})
+}

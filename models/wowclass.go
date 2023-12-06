@@ -1,22 +1,7 @@
 package models
 
-type WoWClass int
+import "github.com/go-playground/validator"
 
-const (
-	Warrior WoWClass = iota
-	Paladin
-	Hunter
-	Rogue
-	Priest
-	DeathKnight
-	Shaman
-	Mage
-	Warlock
-	Monk
-	Druid
-	DemonHunter
-	Evoker
-)
 
 var wowClassNames = [...]string{
 	"Warrior",
@@ -34,9 +19,12 @@ var wowClassNames = [...]string{
 	"Evoker",
 }
 
-func (c WoWClass) String() string {
-	if c < 0 || int(c) >= len(wowClassNames) {
-		return "Unknown"
-	}
-	return wowClassNames[c]
+func WowClassValidator(fl validator.FieldLevel) bool {
+	class := fl.Field().String()
+    for _, validClass := range wowClassNames {
+        if class == validClass {
+            return true
+        }
+    }
+    return false
 }
