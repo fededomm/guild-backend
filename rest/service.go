@@ -9,25 +9,19 @@ import (
 	"github.com/go-playground/validator"
 )
 
+var validate = validator.New()
+
 type Rest struct {
 	DB *sql.DB
 }
-type IRest interface {
-	GetAll(c *gin.Context)
-	PostOne(c *gin.Context)
-}
-
-var validate = validator.New()
 
 func (r *Rest) GetAll(c *gin.Context) {
-
 	c.JSON(200, gin.H{
 		"message": "pong",
 	})
 }
 
 func (r *Rest) PostOne(c *gin.Context) {
-
 	person := new(models.Users)
 
 	if err := c.BindJSON(person); err != nil {

@@ -11,11 +11,11 @@ const (
 )
 
 var queries = [...]string{
-	"INSERT INTO <table_bame> (column1, column2) VALUES (?, ?)",
-	"SELECT * FROM <table_bame>",
-	"SELECT * FROM <table_bame> WHERE id = ?",
-	"UPDATE <table_bame> SET column1 = ?, column2 = ? WHERE id = ?",
-	"DELETE FROM <table_bame> WHERE id = ?",
+	"INSERT INTO Users (Name, Surname, Username, Class, BattleTag) VALUES (?, ?, ?, ?, ?)",
+	"SELECT * FROM Users",
+	"SELECT * FROM Users WHERE id = ?",
+	"UPDATE Users SET name = ?, surname = ? WHERE id = ?",
+	"DELETE FROM Users WHERE id = ?",
 }
 
 func (q Query) String() string {
@@ -24,4 +24,3 @@ func (q Query) String() string {
 	}
 	return queries[q]
 }
-
