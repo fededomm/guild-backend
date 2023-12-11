@@ -17,6 +17,7 @@ func Router(db *sql.DB) {
 	router.Use(middleware.CORSMiddleware())
 	
 	router.GET("/ping", rest.GetAll)
+	router.POST("/insert", rest.PostOne)
 
 	router.Run(":8000")
 }

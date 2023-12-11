@@ -14,6 +14,7 @@ type Rest struct {
 }
 type IRest interface {
 	GetAll(c *gin.Context)
+	PostOne(c *gin.Context)
 }
 
 var validate = validator.New()
