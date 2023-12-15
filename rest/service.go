@@ -31,11 +31,11 @@ func (r *Rest) PostOne(c *gin.Context) {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	if err := CustomValidatorGin(person, c); err != nil {
+	if err := CustomValidatorGin(person); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-	if err := database.DoTrx(r.DB, ctx, *person, c); err != nil {
+	if err := database.DoTrx(r.DB, ctx, *person); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}

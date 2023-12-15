@@ -17,12 +17,12 @@ const (
 	DELETE      string = "DELETE FROM Users WHERE id = $1"
 )
 
-func DoTrx(db *sql.DB, ctx context.Context, user models.User, c *gin.Context) error {
+func DoTrx(db *sql.DB, ctx context.Context, user models.User) error {
 	Tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
-	if lastInsert, err := InserUser(Tx, user, c); err != nil {
+	if lastInsert, err := InserUser(Tx, user); err != nil {
 		Tx.Rollback()
 		return err
 	} else {
@@ -36,7 +36,7 @@ func DoTrx(db *sql.DB, ctx context.Context, user models.User, c *gin.Context) er
 	return nil
 }
 
-func InserUser(tx *sql.Tx, user models.User, c *gin.Context) (int,error) {
+func InserUser(tx *sql.Tx, user models.User) (int,error) {
 	var lastInsertedId int = 0
 	if x, err := tx.Prepare(INSERT_USER); err != nil {
 		return 0,err

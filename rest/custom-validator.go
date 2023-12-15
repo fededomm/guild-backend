@@ -2,23 +2,32 @@ package rest
 
 import (
 	"apocalypse/models"
-
-	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 )
 
-func CustomValidatorGin(model interface{}, c *gin.Context) error {
+func CustomValidatorGin(model interface{}) error {
 	var val = validator.New()
-	if err := val.RegisterValidation("class", models.WowClassValidator); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err := RankCustomValidator(val); err != nil {
 		return err
 	}
-	if err := val.RegisterValidation("ranking", models.RankingValidator); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err := ClassCustomValidator(val); err != nil {
 		return err
 	}
 	if err := val.Struct(model); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		return err
+	}
+	return nil
+}
+
+func RankCustomValidator(val *validator.Validate) error{
+	if err := val.RegisterValidation("ranking", models.RankingValidator); err != nil {
+		return err
+	}
+	return nil
+}
+
+func ClassCustomValidator(val *validator.Validate) error{
+	if err := val.RegisterValidation("class", models.WowClassValidator); err != nil {
 		return err
 	}
 	return nil
