@@ -20,22 +20,17 @@ const (
 func DoTrx(db *sql.DB, ctx context.Context, user models.User, c *gin.Context) error {
 	Tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		c.JSON(500, gin.H{"step":"begin transaction","error": err.Error()})
 		return err
 	}
 	if lastInsert, err := InserUser(Tx, user, c); err != nil {
-		c.JSON(500, gin.H{"step":"insert on table users","error": err.Error()})
 		Tx.Rollback()
 		return err
 	} else {
 		if err := InsertPg(Tx, user, lastInsert); err != nil {
-			
-			c.JSON(500, gin.H{"step":"insert on table personaggi","error": err.Error()})
 			return err
 		}
 	}
 	if err := Tx.Commit(); err != nil {
-		c.JSON(500, gin.H{"step":"commit transaction","error": err.Error()})
 		return err
 	}
 	return nil
@@ -44,11 +39,9 @@ func DoTrx(db *sql.DB, ctx context.Context, user models.User, c *gin.Context) er
 func InserUser(tx *sql.Tx, user models.User, c *gin.Context) (int,error) {
 	var lastInsertedId int = 0
 	if x, err := tx.Prepare(INSERT_USER); err != nil {
-		c.JSON(500, gin.H{"step":"prepare insert on table users","error": err.Error()})
 		return 0,err
 	} else {
 		if err := x.QueryRow(user.Name,user.Surname,user.Username,user.BattleTag,).Scan(&lastInsertedId); err != nil {
-			c.JSON(500, gin.H{"step":"insert on table users","error": err.Error()})
 			return 0,err
 		}
 	}
@@ -70,11 +63,34 @@ func InsertPg(tx *sql.Tx, person models.User, lastInsertedId int) error {
 	return nil
 }
 
-func GetAll(db *sql.DB) (*sql.Rows, error) {
-	row, err := db.Query(GET_ALL)
+func GetAll(db *sql.DB, c *gin.Context) (*[]models.User, error) {
+	var users []models.User
+	var user models.User
+	var personaggio models.Personaggio
+
+	rows, err := db.Query(GET_ALL)
 	if err != nil {
 		return nil, err
 	}
-	return row, nil
+	for rows.Next() {
+		if err := rows.Scan(
+			&user.ID, 
+			&user.Name, 
+			&user.Surname, 
+			&user.Username, 
+			&user.BattleTag, 
+			&personaggio.ID, 			
+			&personaggio.Name, 
+			&personaggio.Class, 
+			&personaggio.TierSetPieces, 
+			&personaggio.Rank,
+		); err != nil {
+			return nil, err
+		}
+		user.Pg = personaggio
+		users = append(users, user)
+		
+	}
+	return &users, nil
 }
 

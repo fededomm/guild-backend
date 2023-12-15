@@ -15,38 +15,12 @@ type Rest struct {
 }
 
 func (r *Rest) GetAll(c *gin.Context) {
-	var users []models.User
-	var user models.User
-	var personaggio models.Personaggio
-
-	rows, err := database.GetAll(r.DB)
+	list, err := database.GetAll(r.DB, c)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	for rows.Next() {
-		if err := rows.Scan(
-			&user.ID, 
-			&user.Name, 
-			&user.Surname, 
-			&user.Username, 
-			&user.BattleTag, 
-			&user.Pg,
-			&personaggio.ID,
-			&personaggio.UserID, 			
-			&personaggio.Name, 
-			&personaggio.Class, 
-			&personaggio.TierSetPieces, 
-			&personaggio.Rank,
-		); err != nil {
-			c.JSON(500, gin.H{"error": err.Error()})
-			return
-		}
-		user.Pg = personaggio
-		users = append(users, user)
-		
-	}
-	c.JSON(200, users)
+	c.JSON(200, list)
 }
 
 func (r *Rest) PostOne(c *gin.Context) {
