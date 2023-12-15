@@ -23,11 +23,13 @@ func DoTrx(db *sql.DB, ctx context.Context, user models.User, c *gin.Context) er
 		c.JSON(500, gin.H{"step":"begin transaction","error": err.Error()})
 		return err
 	}
-	if lastInsert, err := InserUser(db, user, c); err != nil {
+	if lastInsert, err := InserUser(Tx, user, c); err != nil {
 		c.JSON(500, gin.H{"step":"insert on table users","error": err.Error()})
+		Tx.Rollback()
 		return err
 	} else {
-		if err := InsertPg(db, user, lastInsert); err != nil {
+		if err := InsertPg(Tx, user, lastInsert); err != nil {
+			
 			c.JSON(500, gin.H{"step":"insert on table personaggi","error": err.Error()})
 			return err
 		}
@@ -39,9 +41,9 @@ func DoTrx(db *sql.DB, ctx context.Context, user models.User, c *gin.Context) er
 	return nil
 }
 
-func InserUser(db *sql.DB, user models.User, c *gin.Context) (int,error) {
+func InserUser(tx *sql.Tx, user models.User, c *gin.Context) (int,error) {
 	var lastInsertedId int = 0
-	if x, err := db.Prepare(INSERT_USER); err != nil {
+	if x, err := tx.Prepare(INSERT_USER); err != nil {
 		c.JSON(500, gin.H{"step":"prepare insert on table users","error": err.Error()})
 		return 0,err
 	} else {
@@ -53,8 +55,8 @@ func InserUser(db *sql.DB, user models.User, c *gin.Context) (int,error) {
 	return lastInsertedId,nil
 }
 
-func InsertPg(db *sql.DB, person models.User, lastInsertedId int) error {
-	_, err := db.Exec(
+func InsertPg(tx *sql.Tx, person models.User, lastInsertedId int) error {
+	_, err := tx.Exec(
 		INSERT_PG,
 		person.Pg.Name,
 		lastInsertedId,
