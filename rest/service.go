@@ -6,31 +6,41 @@ import (
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
+	"github.com/rs/zerolog/log"
 )
-
-var validate = validator.New()
 
 type Rest struct {
 	DB *sql.DB
 }
 
 func (r *Rest) GetAll(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
+	var persons []models.User
+	rows, err := r.DB.Query(database.GET_ALL.String())
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	for rows.Next() {
+		person := new(models.User)
+		if err := rows.Scan(&person.ID, &person.Name, &person.Surname, &person.Username, &person.BattleTag, &person.Pg); err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+		persons = append(persons, *person)
+		c.JSON(200, persons)
+	}
+
 }
 
 func (r *Rest) PostOne(c *gin.Context) {
-	person := new(models.Users)
+	person := new(models.User)
 
 	if err := c.BindJSON(person); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
-	if validationError := validate.Struct(person); validationError != nil {
-		c.JSON(400, gin.H{"error": validationError.Error()})
+	if err := CustomValidatorGin(person, c); err != nil {
+		log.Err(err).Msgf("Error validating model: %s", err.Error())
 		return
 	}
 
@@ -39,8 +49,8 @@ func (r *Rest) PostOne(c *gin.Context) {
 		person.Name,
 		person.Surname,
 		person.Username,
-		person.Class,
 		person.BattleTag,
+		person.Pg,
 	)
 
 	if err != nil {
