@@ -23,14 +23,16 @@ func Init(config *DbInfo) *sql.DB {
 		config.Dbname,
 		config.Sslmode,
 	)
-	
+
 	db, err := sql.Open("postgres", connectionString)
 	if err != nil {
-		log.Err(err).Msgf("Error opening database: %q", err)
+		log.Fatal().Msgf("Error opening database: %q", err)
+		return nil
 	}
 
 	if err = db.Ping(); err != nil {
-		log.Err(err).Msgf("Error pinging database: %q", err)
+		log.Fatal().Msgf("Error pinging database: %q", err)
+		return nil
 	}
 	return db
 }

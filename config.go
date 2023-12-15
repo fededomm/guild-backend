@@ -18,13 +18,13 @@ type GlobalConfig struct {
 }
 
 type LogConfig struct {
-	Level      string `json:"level" yaml:"level" mapstructure:"level"`
-	EnableJSON bool   `json:"enable_json" yaml:"enable_json" mapstructure:"enable_json"`
+	Level      int  `json:"level" yaml:"level" mapstructure:"level"`
+	EnableJSON bool `json:"enable_json" yaml:"enable_json" mapstructure:"enable_json"`
 }
 
 var DefaultConfig = GlobalConfig{
 	Log: LogConfig{
-		Level:      "debug",
+		Level:      -1,
 		EnableJSON: false,
 	},
 	DataBaseConfig: database.DbInfo{
@@ -77,7 +77,7 @@ func ReadConfig() (*GlobalConfig, error) {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
-	zerolog.SetGlobalLevel(zerolog.Level('0'))
+	zerolog.SetGlobalLevel(zerolog.Level(appCfg.Log.Level))
 
 	return &appCfg, nil
 }
