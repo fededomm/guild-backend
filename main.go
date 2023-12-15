@@ -11,7 +11,6 @@ import (
 )
 
 func main() {
-	
 	conf, err := ReadConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error reading config: %q", err)
@@ -28,18 +27,19 @@ func main() {
 		conf.DataBaseConfig.User,
 		conf.DataBaseConfig.Password,
 		conf.DataBaseConfig.Dbname,
-		conf.DataBaseConfig.Sslmode)
+		conf.DataBaseConfig.Sslmode,
+	)
 
-	db, err := handleDBConnection(database.Init(connectionString))
+	db := database.Init(connectionString)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error handling database connection: %q", err)
 	}
+	log.Info().Msg("Database connection established")
 	log.Info().Msgf("Database connection established, connection string: %s", connectionString)
 	rest.Router(db)
 }
 
 func handleDBConnection(db *sql.DB) (*sql.DB, error) {
-
 	defer func() {
 		if err := db.Close(); err != nil {
 			log.Error().Err(err).Msg("Error closing database connection")
@@ -48,7 +48,5 @@ func handleDBConnection(db *sql.DB) (*sql.DB, error) {
 			log.Info().Msg("Database connection closed")
 		}
 	}()
-
 	return db, nil
-	// Your code to work with the database goes here
 }

@@ -1,6 +1,6 @@
 # Custon
 config.yaml
-
+database/sql
 # File system
 .DS_Store
 Thumbs.db

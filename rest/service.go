@@ -3,10 +3,11 @@ package rest
 import (
 	"apocalypse/database"
 	"apocalypse/models"
+	"context"
 	"database/sql"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/rs/zerolog/log"
 )
 
 type Rest struct {
@@ -14,51 +15,59 @@ type Rest struct {
 }
 
 func (r *Rest) GetAll(c *gin.Context) {
-	var persons []models.User
-	rows, err := r.DB.Query(database.GET_ALL.String())
+	var users []models.User
+	var user models.User
+	var personaggio models.Personaggio
+
+	rows, err := database.GetAll(r.DB)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 	for rows.Next() {
-		person := new(models.User)
-		if err := rows.Scan(&person.ID, &person.Name, &person.Surname, &person.Username, &person.BattleTag, &person.Pg); err != nil {
+		if err := rows.Scan(
+			&user.ID, 
+			&user.Name, 
+			&user.Surname, 
+			&user.Username, 
+			&user.BattleTag, 
+			&user.Pg,
+			&personaggio.ID,
+			&personaggio.UserID, 			
+			&personaggio.Name, 
+			&personaggio.Class, 
+			&personaggio.TierSetPieces, 
+			&personaggio.Rank,
+		); err != nil {
 			c.JSON(500, gin.H{"error": err.Error()})
 			return
 		}
-		persons = append(persons, *person)
-		c.JSON(200, persons)
+		user.Pg = personaggio
+		users = append(users, user)
+		
 	}
-
+	c.JSON(200, users)
 }
 
 func (r *Rest) PostOne(c *gin.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	person := new(models.User)
-
 	if err := c.BindJSON(person); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 	if err := CustomValidatorGin(person, c); err != nil {
-		log.Err(err).Msgf("Error validating model: %s", err.Error())
+		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
-
-	_, err := r.DB.Exec(
-		database.INSERT.String(),
-		person.Name,
-		person.Surname,
-		person.Username,
-		person.BattleTag,
-		person.Pg,
-	)
-
-	if err != nil {
+	if err := database.DoTrx(r.DB, ctx, *person, c); err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	c.JSON(201, gin.H{
 		"message": "created",
+		"status":  "201",
+		"body":    person,
 	})
 }

@@ -10,6 +10,8 @@ type User struct {
 }
 
 type Personaggio struct {
+	ID            int    `json:"id" yaml:"id" mapstructure:"id"`
+	UserID        int    `json:"user_id" yaml:"user_id" mapstructure:"user_id"`
 	Name          string `json:"name" yaml:"name" mapstructure:"name"`
 	Class         string `json:"class" yaml:"class" mapstructure:"class" validate:"class"`
 	TierSetPieces int    `json:"tier_set_pieces" yaml:"tier_set_pieces" mapstructure:"tier_set_pieces" validate:"lte=4"`

@@ -42,8 +42,8 @@ var DefaultConfig = GlobalConfig{
 //go:embed config.yaml
 var projectConfigFile []byte
 
-const ConfigFileEnvVar = "BOOK_STORE_BE_FILE_PATH"
-const ConfigurationName = "BOOK_STORE_BE"
+const ConfigFileEnvVar = "GUILD_BACKEND_FILE_PATH"
+const ConfigurationName = "GUILD_BACKEND"
 
 func ReadConfig() (*GlobalConfig, error) {
 
