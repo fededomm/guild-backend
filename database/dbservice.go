@@ -1,7 +1,7 @@
 package database
 
 import (
-	"apocalypse/models"
+	"guild-be/models"
 	"context"
 	"database/sql"
 

@@ -1,8 +1,7 @@
 package rest
 
 import (
-	"apocalypse/middleware"
-	"apocalypse/models"
+	"guild-be/middleware"
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
@@ -10,10 +9,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Router(db *sql.DB, rank *models.Rank) {
+func Router(db *sql.DB, rank []string) {
 
 	var rest IRest = &Rest{
-		DB: db,
+		DB:   db,
 		Rank: rank,
 	}
 

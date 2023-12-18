@@ -1,8 +1,8 @@
 package main
 
 import (
-	"apocalypse/database"
-	"apocalypse/utils"
+	"guild-be/database"
+	"guild-be/utils"
 	_ "embed"
 	"fmt"
 	"os"

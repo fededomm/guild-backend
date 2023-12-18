@@ -1,6 +1,6 @@
 package custom
 
-import "apocalypse/models"
+import "guild-be/models"
 
 type Success struct {
 	Code    int    `json:"code" example:"200"`

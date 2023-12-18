@@ -1,9 +1,9 @@
 package rest
 
 import (
-	"apocalypse/custom"
-	"apocalypse/database"
-	"apocalypse/models"
+	"guild-be/custom"
+	"guild-be/database"
+	"guild-be/models"
 	"context"
 	"database/sql"
 	"time"
@@ -13,7 +13,7 @@ import (
 
 type Rest struct {
 	DB   *sql.DB
-	Rank *models.Rank
+	Rank models.Rank
 }
 
 // @Summary	Get all users
@@ -53,7 +53,7 @@ func (r *Rest) PostOne(c *gin.Context) {
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
-	if err := CustomValidatorGin(user, *r.Rank); err != nil {
+	if err := CustomValidatorGin(user, r.Rank); err != nil {
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}

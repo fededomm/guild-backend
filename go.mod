@@ -1,4 +1,4 @@
-module apocalypse
+module guild-be
 
 go 1.21.3
 

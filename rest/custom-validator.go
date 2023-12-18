@@ -1,14 +1,14 @@
 package rest
 
 import (
-	"apocalypse/models"
+	"guild-be/models"
 	"github.com/go-playground/validator"
 )
 
 func CustomValidatorGin(model interface{}, rank []string) error {
 	var val = validator.New()
 	var r models.Rank = rank
-	
+
 	if err := RankCustomValidator(val, r); err != nil {
 		return err
 	}
