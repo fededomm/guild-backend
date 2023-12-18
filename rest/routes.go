@@ -5,6 +5,8 @@ import (
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func Router(db *sql.DB) {
@@ -15,9 +17,21 @@ func Router(db *sql.DB) {
 
 	router := gin.Default()
 	router.Use(middleware.CORSMiddleware())
-	
-	router.GET("/ping", rest.GetAll)
-	router.POST("/insert", rest.PostOne)
 
+	v1 := router.Group("/api/v1")
+	{
+		guild := v1.Group("/guild")
+		{
+			guild.GET("/getall", rest.GetAll)
+			guild.POST("/insert", rest.PostOne)
+		}
+	}
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	router.GET("/heathcheck", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Alive!",
+		})
+	})
 	router.Run(":8000")
 }

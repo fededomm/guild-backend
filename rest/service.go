@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"apocalypse/custom"
 	"apocalypse/database"
 	"apocalypse/models"
 	"context"
@@ -14,34 +15,48 @@ type Rest struct {
 	DB *sql.DB
 }
 
+//	@Summary	Get all users
+//	@Description
+//	@Produce	json
+//	@Success	200	{array}		models.User
+//	@Failure	400	{object}	custom.BadRequestError
+//	@Failure	404	{object}	custom.NotFoundError
+//	@Failure	500	{object}	custom.InternalServerError
+//	@Router		/getall [get]
 func (r *Rest) GetAll(c *gin.Context) {
 	list, err := database.GetAll(r.DB, c)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
 	c.JSON(200, list)
 }
 
+//	@Summary	Insert one user
+//	@Description
+//	@Accept		json
+//	@Produce	json
+//	@Param		user	body		models.User	true	"User"
+//	@Success	201		{object}	custom.Created
+//	@Failure	400		{object}	custom.BadRequestError
+//	@Failure	404		{object}	custom.NotFoundError
+//	@Failure	500		{object}	custom.InternalServerError
+//	@Router		/insert [post]
 func (r *Rest) PostOne(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	person := new(models.User)
-	if err := c.BindJSON(person); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	user := new(models.User)
+	if err := c.BindJSON(user); err != nil {
+		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
-	if err := CustomValidatorGin(person); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+	if err := CustomValidatorGin(user); err != nil {
+		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
-	if err := database.DoTrx(r.DB, ctx, *person); err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+	if err := database.DoTrx(r.DB, ctx, *user); err != nil {
+		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
-	c.JSON(201, gin.H{
-		"message": "created",
-		"status":  "201",
-		"body":    person,
-	})
+	c.JSON(201, custom.Created{Code: 201, Message: "Created", Body: *user})
 }

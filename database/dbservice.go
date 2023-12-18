@@ -48,14 +48,14 @@ func InserUser(tx *sql.Tx, user models.User) (int,error) {
 	return lastInsertedId,nil
 }
 
-func InsertPg(tx *sql.Tx, person models.User, lastInsertedId int) error {
+func InsertPg(tx *sql.Tx, user models.User, lastInsertedId int) error {
 	_, err := tx.Exec(
 		INSERT_PG,
-		person.Pg.Name,
+		user.Pg.Name,
 		lastInsertedId,
-		person.Pg.Class,
-		person.Pg.TierSetPieces,
-		person.Pg.Rank,
+		user.Pg.Class,
+		user.Pg.TierSetPieces,
+		user.Pg.Rank,
 	)
 	if err != nil {
 		return err
