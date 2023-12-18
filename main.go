@@ -3,6 +3,7 @@ package main
 import (
 	"apocalypse/database"
 	"apocalypse/docs"
+	"apocalypse/models"
 	"apocalypse/rest"
 
 	"github.com/rs/zerolog/log"
@@ -25,6 +26,6 @@ func main() {
 		log.Fatal().Err(err).Msgf("Error handling database connection: %q", err)
 	}
 	log.Info().Msg("Database connection established")
-	rest.Router(db)
+	rest.Router(db, (*models.Rank)(&conf.Ranking))
 }
 

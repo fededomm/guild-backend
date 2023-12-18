@@ -2,6 +2,7 @@ package rest
 
 import (
 	"apocalypse/middleware"
+	"apocalypse/models"
 	"database/sql"
 
 	"github.com/gin-gonic/gin"
@@ -9,10 +10,11 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Router(db *sql.DB) {
+func Router(db *sql.DB, rank *models.Rank) {
 
 	var rest IRest = &Rest{
 		DB: db,
+		Rank: rank,
 	}
 
 	router := gin.Default()

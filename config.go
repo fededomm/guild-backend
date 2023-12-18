@@ -15,6 +15,7 @@ import (
 type GlobalConfig struct {
 	Log            LogConfig       `json:"log" yaml:"log" mapstructure:"log"`
 	DataBaseConfig database.DbInfo `json:"database" yaml:"database" mapstructure:"database"`
+	Ranking        []string        `json:"ranking" yaml:"ranking" mapstructure:"ranking"`
 }
 
 type LogConfig struct {
@@ -34,6 +35,14 @@ var DefaultConfig = GlobalConfig{
 		Password: "postgres",
 		Sslmode:  "disable",
 		Dbname:   "apocalypse",
+	},
+	Ranking: []string{
+		"Guild Master",
+		"Officer",
+		"Raider",
+		"Trial",
+		"Social",
+		"Alt",
 	},
 }
 

@@ -5,9 +5,11 @@ import (
 	"github.com/go-playground/validator"
 )
 
-func CustomValidatorGin(model interface{}) error {
+func CustomValidatorGin(model interface{}, rank []string) error {
 	var val = validator.New()
-	if err := RankCustomValidator(val); err != nil {
+	var r models.Rank = rank
+	
+	if err := RankCustomValidator(val, r); err != nil {
 		return err
 	}
 	if err := ClassCustomValidator(val); err != nil {
@@ -19,8 +21,8 @@ func CustomValidatorGin(model interface{}) error {
 	return nil
 }
 
-func RankCustomValidator(val *validator.Validate) error{
-	if err := val.RegisterValidation("ranking", models.RankingValidator); err != nil {
+func RankCustomValidator(val *validator.Validate, r models.Rank) error{
+	if err := val.RegisterValidation("ranking", r.RankingValidator); err != nil {
 		return err
 	}
 	return nil
