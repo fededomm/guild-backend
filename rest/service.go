@@ -22,7 +22,8 @@ type Rest struct {
 //	@Failure	400	{object}	custom.BadRequestError
 //	@Failure	404	{object}	custom.NotFoundError
 //	@Failure	500	{object}	custom.InternalServerError
-//	@Router		/getall [get]
+//	@Tags		Guild
+//	@Router		/guild/getall [get]
 func (r *Rest) GetAll(c *gin.Context) {
 	list, err := database.GetAll(r.DB, c)
 	if err != nil {
@@ -36,12 +37,13 @@ func (r *Rest) GetAll(c *gin.Context) {
 //	@Description
 //	@Accept		json
 //	@Produce	json
-//	@Param		user	body		models.User	true	"User"
+//	@Param		user	body		custom.ExampleBody	true	"User"
 //	@Success	201		{object}	custom.Created
 //	@Failure	400		{object}	custom.BadRequestError
 //	@Failure	404		{object}	custom.NotFoundError
 //	@Failure	500		{object}	custom.InternalServerError
-//	@Router		/insert [post]
+//	@Tags		Guild
+//	@Router		/guild/insert [post]
 func (r *Rest) PostOne(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

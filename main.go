@@ -12,7 +12,7 @@ func main() {
 	docs.SwaggerInfo.Title = "Swagger Example API"
 	docs.SwaggerInfo.Description = "This is a sample server guild server."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.BasePath = "/api/v1/"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
 	conf, err := ReadConfig()

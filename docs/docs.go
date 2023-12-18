@@ -15,10 +15,13 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/getall": {
+        "/guild/getall": {
             "get": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guild"
                 ],
                 "summary": "Get all users",
                 "responses": {
@@ -34,31 +37,34 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.BadRequestError"
+                            "$ref": "#/definitions/custom.BadRequestError"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.NotFoundError"
+                            "$ref": "#/definitions/custom.NotFoundError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.InternalServerError"
+                            "$ref": "#/definitions/custom.InternalServerError"
                         }
                     }
                 }
             }
         },
-        "/insert": {
+        "/guild/insert": {
             "post": {
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Guild"
                 ],
                 "summary": "Insert one user",
                 "parameters": [
@@ -68,7 +74,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/custom.ExampleBody"
                         }
                     }
                 ],
@@ -76,25 +82,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/response.Created"
+                            "$ref": "#/definitions/custom.Created"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.BadRequestError"
+                            "$ref": "#/definitions/custom.BadRequestError"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/response.NotFoundError"
+                            "$ref": "#/definitions/custom.NotFoundError"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/response.InternalServerError"
+                            "$ref": "#/definitions/custom.InternalServerError"
                         }
                     }
                 }
@@ -102,7 +108,61 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Personaggio": {
+        "custom.BadRequestError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 400
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "custom.Created": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "code": {
+                    "type": "integer",
+                    "example": 201
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "custom.ExampleBody": {
+            "type": "object",
+            "required": [
+                "battle_tag",
+                "name",
+                "pg",
+                "surname",
+                "username"
+            ],
+            "properties": {
+                "battle_tag": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pg": {
+                    "$ref": "#/definitions/custom.ExampleBodyPg"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "custom.ExampleBodyPg": {
             "type": "object",
             "required": [
                 "class",
@@ -125,6 +185,60 @@ const docTemplate = `{
                 }
             }
         },
+        "custom.InternalServerError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 500
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "custom.NotFoundError": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "example": 404
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Personaggio": {
+            "type": "object",
+            "required": [
+                "class",
+                "name",
+                "rank",
+                "tier_set_pieces"
+            ],
+            "properties": {
+                "class": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rank": {
+                    "type": "string"
+                },
+                "tier_set_pieces": {
+                    "type": "integer",
+                    "maximum": 4
+                },
+                "user_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "required": [
@@ -138,6 +252,9 @@ const docTemplate = `{
                 "battle_tag": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -148,57 +265,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.BadRequestError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 400
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.Created": {
-            "type": "object",
-            "properties": {
-                "body": {
-                    "$ref": "#/definitions/models.User"
-                },
-                "code": {
-                    "type": "integer",
-                    "example": 201
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.InternalServerError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 500
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "response.NotFoundError": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 404
-                },
-                "message": {
                     "type": "string"
                 }
             }
