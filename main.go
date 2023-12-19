@@ -3,7 +3,6 @@ package main
 import (
 	"guild-be/src/database"
 	"guild-be/docs"
-	"guild-be/src/config"
 	"guild-be/src/rest/controller"
 
 	"github.com/rs/zerolog/log"
@@ -16,7 +15,7 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1/"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	conf, err := config.ReadConfig()
+	conf, err := ReadConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error reading config: %q", err)
 	}

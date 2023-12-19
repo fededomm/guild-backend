@@ -1,8 +1,9 @@
-package config
+package main
 
 import (
 	_ "embed"
 	"fmt"
+	"guild-be/src/config"
 	"guild-be/src/rest/utils"
 	"os"
 
@@ -19,7 +20,7 @@ var projectConfigFile []byte
 const ConfigFileEnvVar = "GUILD_BACKEND_FILE_PATH"
 const ConfigurationName = "GUILD_BACKEND"
 
-func ReadConfig() (*GlobalConfig, error) {
+func ReadConfig() (*config.GlobalConfig, error) {
 
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	configPath := os.Getenv(ConfigFileEnvVar)
@@ -42,7 +43,7 @@ func ReadConfig() (*GlobalConfig, error) {
 		// return nil, fmt.Errorf("the config path variable %s has not been set; please set", ConfigFileEnvVar)
 	}
 
-	appCfg := DefaultConfig
+	appCfg := config.DefaultConfig
 	err = yaml.Unmarshal(cfgContent, &appCfg)
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error unmarshalling config: %q", err)

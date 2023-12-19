@@ -7,47 +7,10 @@ import (
 )
 
 const (
-	INSERT_USER string = `INSERT INTO 
-		Users (Name, Surname, Username, BattleTag)
-	VALUES 
-		($1, $2, $3, $4) 
-	RETURNING 
-		id`
-	INSERT_PG string = `INSERT INTO 
-		Personaggi (Name, UserID, Class, TierSetPieces, Rank) 
-	VALUES 
-		($1, $2, $3, $4, $5)`
-	GET_ALL string = `SELECT 
-		Users.ID, 
-		Users.Name, 
-		Users.Surname, 
-		Users.Username, 
-		Users.BattleTag, 
-		Personaggi.ID, 
-		Personaggi.Name, 
-		Personaggi.Class, 
-		Personaggi.TierSetPieces,
-		Personaggi.Rank 
-	FROM 
-		Users 
-	INNER JOIN 
-		Personaggi ON Users.ID = Personaggi.UserID;`
-	GET_ALL_PG_FOREACH_USER string = `SELECT 
-		Users.ID, 
-		Users.Name, 
-		Users.Surname, 
-		Users.Username, 
-		Users.BattleTag, 
-		Personaggi.Name AS CharacterName, 
-		Personaggi.Class, 
-		Personaggi.TierSetPieces, 
-		Personaggi.Rank
-	FROM 
-		Users
-	INNER JOIN 
-		Personaggi ON Users.ID = Personaggi.UserID
-	WHERE 
-		Users.Name = $1;`
+	INSERT_USER string = "INSERT INTO Users (Name, Surname, Username, BattleTag) VALUES ($1, $2, $3, $4) RETURNING id"
+	INSERT_PG string = "INSERT INTO Personaggi (Name, UserID, Class, TierSetPieces, Rank) VALUES ($1, $2, $3, $4, $5)"
+	GET_ALL string = "SELECT Users.ID, Users.Name, Users.Surname, Users.Username, Users.BattleTag, Personaggi.ID, Personaggi.Name, Personaggi.Class, Personaggi.TierSetPieces,Personaggi.Rank FROM Users INNER JOIN Personaggi ON Users.ID = Personaggi.UserID;"
+	GET_ALL_PG_FOREACH_USER string = "SELECT Users.ID, Users.Name, Users.Surname, Users.Username, Users.BattleTag, Personaggi.Name, Personaggi.Class, Personaggi.TierSetPieces, Personaggi.Rank FROM Users INNER JOIN Personaggi ON Users.ID = Personaggi.UserID WHERE Users.Name = $1;"
 	UPDATE string = "UPDATE Users SET name = $1, surname = $2 WHERE id = $3"
 	DELETE string = "DELETE FROM Users WHERE id = $1"
 )
