@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/guild/": {
+        "/guild/getall": {
             "get": {
                 "produces": [
                     "application/json"
@@ -53,7 +53,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/guild/insert": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -104,7 +106,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/guild/{name}": {
+        "/guild/listpg": {
             "get": {
                 "description": "Get all pg for user",
                 "produces": [
@@ -117,7 +119,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "name",
+                        "description": "Name",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -125,7 +127,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "ok",
                         "schema": {
                             "$ref": "#/definitions/custom.Success"
                         }

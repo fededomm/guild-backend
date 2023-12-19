@@ -1,9 +1,10 @@
 package main
 
 import (
-	"guild-be/database"
+	"guild-be/src/database"
 	"guild-be/docs"
-	"guild-be/rest"
+	"guild-be/src/config"
+	"guild-be/src/rest/controller"
 
 	"github.com/rs/zerolog/log"
 )
@@ -15,16 +16,18 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1/"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	conf, err := ReadConfig()
+	conf, err := config.ReadConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error reading config: %q", err)
 	}
 
-	db := database.Init(&conf.DataBaseConfig)
+	dbService := database.DBService{
+		DB: database.Init(&conf.DataBaseConfig),
+	}
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error handling database connection: %q", err)
 	}
 	log.Info().Msg("Database connection established")
-	rest.Router(db, conf.Ranking)
+	controller.Router(&dbService, conf.ValidArray.Rank, conf.ValidArray.Class)
 }
 

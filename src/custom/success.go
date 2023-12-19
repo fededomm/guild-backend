@@ -1,6 +1,6 @@
 package custom
 
-import "guild-be/models"
+import "guild-be/src/models"
 
 type Success struct {
 	Code    int    `json:"code" example:"200"`

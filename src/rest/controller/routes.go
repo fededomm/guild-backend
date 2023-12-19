@@ -1,19 +1,24 @@
-package rest
+package controller
 
 import (
-	"guild-be/middleware"
-	"database/sql"
+	"guild-be/src/rest/routes"
+	"guild-be/src/database"
+	"guild-be/src/rest/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Router(db *sql.DB, rank []string) {
 
-	var rest IRest = &Rest{
-		DB:   db,
-		Rank: rank,
+func Router(db *database.DBService, rank []string, class []string) {
+
+	var rest routes.IRest = &routes.Rest{
+		DB:    db,
+		Rank:  rank,
+		Class: class,
+		Val:   validator.New(),
 	}
 
 	router := gin.Default()
@@ -23,8 +28,9 @@ func Router(db *sql.DB, rank []string) {
 	{
 		guild := v1.Group("/guild")
 		{
-			guild.GET("/getall", rest.GetAll)
-			guild.POST("/insert", rest.PostOne)
+			guild.GET("", rest.GetAll)
+			guild.POST("", rest.PostOne)
+			guild.GET(":name", rest.GetAllPgByUser)
 		}
 	}
 

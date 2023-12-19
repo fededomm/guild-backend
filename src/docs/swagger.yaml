@@ -123,7 +123,7 @@ definitions:
 info:
   contact: {}
 paths:
-  /guild/:
+  /guild/getall:
     get:
       produces:
       - application/json
@@ -149,6 +149,7 @@ paths:
       summary: Get all users
       tags:
       - Guild
+  /guild/insert:
     post:
       consumes:
       - application/json
@@ -181,11 +182,11 @@ paths:
       summary: Insert one user
       tags:
       - Guild
-  /guild/{name}:
+  /guild/listpg:
     get:
       description: Get all pg for user
       parameters:
-      - description: name
+      - description: Name
         in: path
         name: name
         required: true
@@ -194,7 +195,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: OK
+          description: ok
           schema:
             $ref: '#/definitions/custom.Success'
         "400":
