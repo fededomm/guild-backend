@@ -9,7 +9,7 @@ swagger:
 	swag init
 
 build:
-	go build -o $(APP_NAME) ./main.go
+	go build -o $(APP_NAME) 
 
 run:
 	./$(APP_NAME)

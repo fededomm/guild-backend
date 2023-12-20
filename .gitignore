@@ -1,6 +1,8 @@
 # Custon
 config.yaml
 database/sql
+guild-backend
+
 # File system
 .DS_Store
 Thumbs.db

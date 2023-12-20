@@ -12,6 +12,7 @@ type GlobalConfig struct {
 type ArrValidation struct {
 	Rank  []string `json:"rank" yaml:"rank" mapstructure:"rank"`
 	Class []string `json:"class" yaml:"class" mapstructure:"class"`
+	Name  []string `json:"name" yaml:"name" mapstructure:"name"`
 }
 
 type LogConfig struct {
