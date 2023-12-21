@@ -33,6 +33,6 @@ func main() {
 		log.Fatal().Err(err).Msgf("Error handling database connection: %q", err)
 	}
 	log.Info().Msg("Database connection established")
-	controller.Router(&dbService, conf.ValidArray.Rank, conf.ValidArray.Class)
+	controller.Router(&dbService)
 }
 

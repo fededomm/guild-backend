@@ -11,7 +11,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Router(db *database.DBService, ranks []string, class []string) {
+func Router(db *database.DBService) {
 
 	var rest routes.IRest = &routes.Rest{
 		DB:    db,
