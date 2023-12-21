@@ -6,6 +6,7 @@ clean:
 	rm -rf ./$(APP_NAME)
 
 swagger:
+	rm -rf ./docs
 	swag init
 
 build:

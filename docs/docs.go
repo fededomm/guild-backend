@@ -53,7 +53,58 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/guild/pg": {
+            "post": {
+                "description": "Insert one pg",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Guild"
+                ],
+                "summary": "Insert one pg",
+                "parameters": [
+                    {
+                        "description": "User",
+                        "name": "pg",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/custom.ExampleBodyPg"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/custom.Created"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/custom.BadRequestError"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/custom.NotFoundError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/custom.InternalServerError"
+                        }
+                    }
+                }
+            }
+        },
+        "/guild/usr": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -72,7 +123,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/custom.ExampleBody"
+                            "$ref": "#/definitions/custom.ExampleBodyUser"
                         }
                     }
                 ],
@@ -168,41 +219,11 @@ const docTemplate = `{
         "custom.Created": {
             "type": "object",
             "properties": {
-                "body": {
-                    "$ref": "#/definitions/models.User"
-                },
                 "code": {
                     "type": "integer",
                     "example": 201
                 },
                 "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "custom.ExampleBody": {
-            "type": "object",
-            "required": [
-                "battle_tag",
-                "name",
-                "pg",
-                "surname",
-                "username"
-            ],
-            "properties": {
-                "battle_tag": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "pg": {
-                    "$ref": "#/definitions/custom.ExampleBodyPg"
-                },
-                "surname": {
-                    "type": "string"
-                },
-                "username": {
                     "type": "string"
                 }
             }
@@ -213,11 +234,14 @@ const docTemplate = `{
                 "class",
                 "name",
                 "rank",
-                "tier_set_pieces"
+                "tiersetpieces"
             ],
             "properties": {
                 "class": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -225,8 +249,34 @@ const docTemplate = `{
                 "rank": {
                     "type": "string"
                 },
-                "tier_set_pieces": {
+                "tiersetpieces": {
                     "type": "integer"
+                }
+            }
+        },
+        "custom.ExampleBodyUser": {
+            "type": "object",
+            "required": [
+                "battle_tag",
+                "name",
+                "surname",
+                "username"
+            ],
+            "properties": {
+                "battle_tag": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "surname": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },
@@ -272,14 +322,11 @@ const docTemplate = `{
                 "class",
                 "name",
                 "rank",
-                "tier_set_pieces"
+                "tiersetpieces"
             ],
             "properties": {
                 "class": {
                     "type": "string"
-                },
-                "class_id": {
-                    "type": "integer"
                 },
                 "id": {
                     "type": "integer"
@@ -290,12 +337,15 @@ const docTemplate = `{
                 "rank": {
                     "type": "string"
                 },
-                "tier_set_pieces": {
+                "tiersetpieces": {
                     "type": "integer",
                     "maximum": 4
                 },
                 "user_id": {
                     "type": "integer"
+                },
+                "user_username": {
+                    "type": "string"
                 }
             }
         },

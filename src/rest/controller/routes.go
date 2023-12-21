@@ -15,8 +15,6 @@ func Router(db *database.DBService, ranks []string, class []string) {
 
 	var rest routes.IRest = &routes.Rest{
 		DB:    db,
-		Ranks: ranks,
-		Class: class,
 		Val:   validator.New(),
 	}
 

@@ -9,22 +9,38 @@ definitions:
     type: object
   custom.Created:
     properties:
-      body:
-        $ref: '#/definitions/models.User'
       code:
         example: 201
         type: integer
       message:
         type: string
     type: object
-  custom.ExampleBody:
+  custom.ExampleBodyPg:
+    properties:
+      class:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      rank:
+        type: string
+      tiersetpieces:
+        type: integer
+    required:
+    - class
+    - name
+    - rank
+    - tiersetpieces
+    type: object
+  custom.ExampleBodyUser:
     properties:
       battle_tag:
         type: string
+      id:
+        type: integer
       name:
         type: string
-      pg:
-        $ref: '#/definitions/custom.ExampleBodyPg'
       surname:
         type: string
       username:
@@ -32,25 +48,8 @@ definitions:
     required:
     - battle_tag
     - name
-    - pg
     - surname
     - username
-    type: object
-  custom.ExampleBodyPg:
-    properties:
-      class:
-        type: string
-      name:
-        type: string
-      rank:
-        type: string
-      tier_set_pieces:
-        type: integer
-    required:
-    - class
-    - name
-    - rank
-    - tier_set_pieces
     type: object
   custom.InternalServerError:
     properties:
@@ -80,24 +79,24 @@ definitions:
     properties:
       class:
         type: string
-      class_id:
-        type: integer
       id:
         type: integer
       name:
         type: string
       rank:
         type: string
-      tier_set_pieces:
+      tiersetpieces:
         maximum: 4
         type: integer
       user_id:
         type: integer
+      user_username:
+        type: string
     required:
     - class
     - name
     - rank
-    - tier_set_pieces
+    - tiersetpieces
     type: object
   models.User:
     properties:
@@ -149,38 +148,6 @@ paths:
       summary: Get all users
       tags:
       - Guild
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: User
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/custom.ExampleBody'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/custom.Created'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/custom.BadRequestError'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/custom.NotFoundError'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/custom.InternalServerError'
-      summary: Insert one user
-      tags:
-      - Guild
   /guild/{name}:
     get:
       description: Get all pg for user
@@ -210,6 +177,71 @@ paths:
           schema:
             $ref: '#/definitions/custom.InternalServerError'
       summary: Get all pg for user
+      tags:
+      - Guild
+  /guild/pg:
+    post:
+      description: Insert one pg
+      parameters:
+      - description: User
+        in: body
+        name: pg
+        required: true
+        schema:
+          $ref: '#/definitions/custom.ExampleBodyPg'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/custom.Created'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/custom.BadRequestError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/custom.NotFoundError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/custom.InternalServerError'
+      summary: Insert one pg
+      tags:
+      - Guild
+  /guild/usr:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/custom.ExampleBodyUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/custom.Created'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/custom.BadRequestError'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/custom.NotFoundError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/custom.InternalServerError'
+      summary: Insert one user
       tags:
       - Guild
 swagger: "2.0"

@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"guild-be/src/custom"
 	"guild-be/src/models"
@@ -10,10 +11,16 @@ import (
 
 const (
 	INSERT_USER             string = "INSERT INTO Users (Name, Surname, Username, BattleTag) VALUES ($1, $2, $3, $4)"
-	INSERT_PG               string = "INSERT INTO Personaggi (Name, UserID, UserUsername, Class, TierSetPieces, Rank) VALUES ($1, $2, $3, $4, $5, $6)"
-	SELECT_USER_ID          string = "SELECT ID FROM Users WHERE Username = $1"
-	GET_ALL                 string = "SELECT Users.ID, Users.Name, Users.Surname, Users.Username, Users.BattleTag, Personaggi.ID, Personaggi.Name, Personaggi.Class, Personaggi.TierSetPieces,Personaggi.Rank FROM Users INNER JOIN Personaggi ON Users.ID = Personaggi.UserID;"
-	GET_ALL_PG_FOREACH_USER string = "SELECT Users.ID, Users.Name, Users.Surname, Users.Username, Users.BattleTag, Personaggi.Name, Personaggi.Class, Personaggi.TierSetPieces, Personaggi.Rank FROM Users INNER JOIN Personaggi ON Users.ID = Personaggi.UserID WHERE Users.Name = $1;"
+	INSERT_PG               string = "INSERT INTO Personaggi (Name, UserUsername, Class, TierSetPieces, Rank) VALUES ($1, $2, $3, $4, $5)"
+	SELECT_USER_ID          string = "SELECT Username FROM Users WHERE Username = $1"
+	GET_ALL                 string = 
+	`SELECT Users.ID, Users.Name, Users.Surname, Users.Username, Users.BattleTag FROM Users`
+	GET_ALL_PG_FOREACH_USER string = 
+	`SELECT Users.Name, Users.Username, Users.BattleTag, json_agg(Personaggi) as PgList
+	FROM Users
+	LEFT JOIN Personaggi ON Users.Username = Personaggi.UserUsername
+	WHERE Users.Username = $1
+	GROUP BY users.name, users.username, users.battletag;`
 )
 
 type DBService struct {
@@ -28,20 +35,19 @@ func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
 }
 
 func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error {
-	var userID int
-	err := db.DB.QueryRowContext(ctx, SELECT_USER_ID, pg.UserUsername).Scan(&userID)
-	if err != nil {
+	var userName string
+	err := db.DB.QueryRowContext(ctx, SELECT_USER_ID, pg.UserUsername).Scan(&userName)
+	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
-	if userID == 0 {
-		return errors.New("user not found")
+	if sql.ErrNoRows == err {
+		return errors.New("userID not found")
 	}
 	_, err = db.DB.ExecContext(
 		ctx,
 		INSERT_PG,
 		pg.Name,
-		userID,
-		pg.UserUsername,
+		userName,
 		pg.Class,
 		pg.TierSetPieces,
 		pg.Rank,
@@ -52,11 +58,9 @@ func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error 
 	return nil
 }
 
-func (db *DBService) GetAll(ctx context.Context) (*[]models.User, error) {
-	var users []models.User
-	var user models.User
-	var personaggio models.Personaggio
-
+func (db *DBService) GetAll(ctx context.Context) (*[]custom.ExampleBodyUser, error) {
+	var users []custom.ExampleBodyUser
+	var user custom.ExampleBodyUser
 	rows, err := db.DB.QueryContext(ctx, GET_ALL)
 	if err != nil {
 		return nil, err
@@ -68,41 +72,45 @@ func (db *DBService) GetAll(ctx context.Context) (*[]models.User, error) {
 			&user.Surname,
 			&user.Username,
 			&user.BattleTag,
-			&personaggio.ID,
-			&personaggio.Name,
-			&personaggio.Class,
-			&personaggio.TierSetPieces,
-			&personaggio.Rank,
 		); err != nil {
 			return nil, err
 		}
-		user.Pg = personaggio
 		users = append(users, user)
 	}
 	return &users, nil
 }
 
-func (db DBService) GetAllPgForUser(ctx context.Context, name string) (*custom.ExampleListOfPGOfAUser, error) {
-	var exampleBodyUser custom.ExampleListOfPGOfAUser
-	var personaggi  []custom.ExampleBodyPg
-	var personaggio custom.ExampleBodyPg
+func (db *DBService) GetAllPgForUser(ctx context.Context, username string) (*custom.ExampleListOfPGOfAUser, error) {
+    rows, err := db.DB.QueryContext(ctx, GET_ALL_PG_FOREACH_USER, username)
+    if err != nil {
+        return &custom.ExampleListOfPGOfAUser{}, err
+    }
+    defer rows.Close()
 
-	rows, err := db.DB.QueryContext(ctx, GET_ALL_PG_FOREACH_USER, name)
-	if err != nil {
-		return nil, err
-	}
-	for rows.Next() {
-		if err := rows.Scan(
-			&personaggio.Name,
-			&personaggio.Class,
-			&personaggio.TierSetPieces,
-			&personaggio.Rank,
-		); err != nil {
-			return nil, err
+    var user custom.ExampleListOfPGOfAUser
+    for rows.Next() {
+        var pg []byte
+        err := rows.Scan( 
+			&user.Name, 
+			&user.Username, 
+			&user.BattleTag, 
+			&pg,
+		)
+        if err != nil {
+            return &custom.ExampleListOfPGOfAUser{}, err
+        }
+		var pgList []custom.ExampleBodyPg
+		err = json.Unmarshal(pg, &pgList)
+		if err != nil {
+			return &custom.ExampleListOfPGOfAUser{}, err
 		}
-		personaggi = append(personaggi, personaggio)
-		exampleBodyUser.PgList = personaggi
+        user.PgList = pgList
+    }
 
-	}
-	return &exampleBodyUser, nil
+    if err := rows.Err(); err != nil {
+        return &custom.ExampleListOfPGOfAUser{}, err
+    }
+
+    return &user, nil
 }
+

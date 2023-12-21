@@ -45,6 +45,7 @@ func ReadConfig() (*config.GlobalConfig, error) {
 
 	appCfg := config.DefaultConfig
 	err = yaml.Unmarshal(cfgContent, &appCfg)
+	
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error unmarshalling config: %q", err)
 	}

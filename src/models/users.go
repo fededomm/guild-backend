@@ -15,6 +15,6 @@ type Personaggio struct {
 	UserUsername  string `json:"user_username,omitempty" yaml:"user_username" mapstructure:"user_username"`
 	Name          string `json:"name" yaml:"name" mapstructure:"name" validate:"required"`
 	Class         string `json:"class" yaml:"class" mapstructure:"class" validate:"required,class"`
-	TierSetPieces int    `json:"tier_set_pieces" yaml:"tier_set_pieces" mapstructure:"tier_set_pieces" validate:"required,lte=4"`
+	TierSetPieces int    `json:"tiersetpieces" yaml:"tiersetpieces" mapstructure:"tiersetpieces" validate:"required,lte=4"`
 	Rank          string `json:"rank" yaml:"rank" mapstructure:"rank" validate:"required,rank"`
 }

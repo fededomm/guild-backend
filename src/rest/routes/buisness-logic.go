@@ -14,9 +14,6 @@ import (
 
 type Rest struct {
 	DB    *database.DBService
-	Ranks []string
-	Class []string
-	Names []string
 	Val   *validator.Validate
 }
 
@@ -68,7 +65,7 @@ func (r *Rest) GetAllPgByUser(c *gin.Context) {
 // @Description
 // @Accept		json
 // @Produce	json
-// @Param		user	body		custom.ExampleBody	true	"User"
+// @Param		user	body		custom.ExampleBodyUser	true	"User"
 // @Success	201		{object}	custom.Created
 // @Failure	400		{object}	custom.BadRequestError
 // @Failure	404		{object}	custom.NotFoundError
@@ -91,16 +88,18 @@ func (r *Rest) PostUser(c *gin.Context) {
 	c.JSON(201, custom.Created{Code: 201, Message: "Created"})
 }
 
-// @Summary 登录
-// @Description 登录
+// @Summary Insert one pg
+// @Description  Insert one pg
 // @Produce json
 // @Param		pg	body		custom.ExampleBodyPg	true	"User"
 // @Success	201		{object}	custom.Created
 // @Failure	400		{object}	custom.BadRequestError
 // @Failure	404		{object}	custom.NotFoundError
 // @Failure	500		{object}	custom.InternalServerError
+// @Tags		Guild
 // @Router /guild/pg [post]
 func (r *Rest) PostPg(c *gin.Context) {
+	var rank, class []string
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	pg := new(models.Personaggio)
@@ -108,8 +107,20 @@ func (r *Rest) PostPg(c *gin.Context) {
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
-	arrToValid.Rank = r.Ranks
-	arrToValid.Class = r.Class
+	fetchRank, err := utils.FetchArray(r.DB.DB, rank, "rank")
+	if err != nil {
+		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
+		return
+	}
+	fetchClass, err := utils.FetchArray(r.DB.DB, class, "class")
+	if err != nil {
+		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
+		return
+	}
+	arrToValid = utils.ArrToValid{
+		Rank:  fetchRank,
+		Class: fetchClass,
+	}
 	if err := arrToValid.CustomArrayRankClassValidatorGin(pg, r.Val); err != nil {
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return

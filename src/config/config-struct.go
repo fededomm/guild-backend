@@ -23,7 +23,6 @@ type LogConfig struct {
 var DefaultConfig = GlobalConfig{
 	Log: LogConfig{
 		Level:      -1,
-		EnableJSON: false,
 	},
 	DataBaseConfig: database.DbInfo{
 		Host:     "localhost",
