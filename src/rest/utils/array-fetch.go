@@ -3,6 +3,8 @@ package utils
 import (
 	"database/sql"
 	"fmt"
+
+	"github.com/rs/zerolog/log"
 )
 
 
@@ -10,6 +12,7 @@ func FetchArray(db *sql.DB, fetchArr []string, tablename string) ([]string, erro
 	query := fmt.Sprintf("SELECT name FROM %s", tablename)
 	rows, err := db.Query(query)
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		return nil, err
 	}
 	
@@ -18,6 +21,7 @@ func FetchArray(db *sql.DB, fetchArr []string, tablename string) ([]string, erro
 		var field string
 		err := rows.Scan(&field)
 		if err != nil {
+			log.Err(err).Msg(err.Error())
 			return nil, err
 		}
 		arr = append(arr, field)
@@ -25,6 +29,7 @@ func FetchArray(db *sql.DB, fetchArr []string, tablename string) ([]string, erro
 	
 	err = rows.Err()
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		return nil, err
 	}
 	

@@ -7,6 +7,8 @@ import (
 	"errors"
 	"guild-be/src/custom"
 	"guild-be/src/models"
+
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -29,6 +31,7 @@ type DBService struct {
 func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
 	_, err := db.DB.QueryContext(ctx, INSERT_USER, user.Name, user.Surname, user.Username, user.BattleTag)
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		return err
 	}
 	return nil
@@ -38,9 +41,11 @@ func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error 
 	var userName string
 	err := db.DB.QueryRowContext(ctx, SELECT_USER_ID, pg.UserUsername).Scan(&userName)
 	if err != nil && err != sql.ErrNoRows {
+		log.Err(err).Msg(err.Error())
 		return err
 	}
 	if sql.ErrNoRows == err {
+		log.Err(err).Msg(err.Error())
 		return errors.New("userID not found")
 	}
 	_, err = db.DB.ExecContext(
@@ -53,6 +58,7 @@ func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error 
 		pg.Rank,
 	)
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		return err
 	}
 	return nil
@@ -63,6 +69,7 @@ func (db *DBService) GetAll(ctx context.Context) (*[]custom.ExampleBodyUser, err
 	var user custom.ExampleBodyUser
 	rows, err := db.DB.QueryContext(ctx, GET_ALL)
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		return nil, err
 	}
 	for rows.Next() {
@@ -73,6 +80,7 @@ func (db *DBService) GetAll(ctx context.Context) (*[]custom.ExampleBodyUser, err
 			&user.Username,
 			&user.BattleTag,
 		); err != nil {
+			log.Err(err).Msg(err.Error())
 			return nil, err
 		}
 		users = append(users, user)
@@ -83,6 +91,7 @@ func (db *DBService) GetAll(ctx context.Context) (*[]custom.ExampleBodyUser, err
 func (db *DBService) GetAllPgForUser(ctx context.Context, username string) (*custom.ExampleListOfPGOfAUser, error) {
     rows, err := db.DB.QueryContext(ctx, GET_ALL_PG_FOREACH_USER, username)
     if err != nil {
+		log.Err(err).Msg(err.Error())
         return &custom.ExampleListOfPGOfAUser{}, err
     }
     defer rows.Close()
@@ -97,17 +106,20 @@ func (db *DBService) GetAllPgForUser(ctx context.Context, username string) (*cus
 			&pg,
 		)
         if err != nil {
+			log.Err(err).Msg(err.Error())
             return &custom.ExampleListOfPGOfAUser{}, err
         }
 		var pgList []custom.ExampleBodyPg
 		err = json.Unmarshal(pg, &pgList)
 		if err != nil {
+			log.Err(err).Msg(err.Error())
 			return &custom.ExampleListOfPGOfAUser{}, err
 		}
         user.PgList = pgList
     }
 
     if err := rows.Err(); err != nil {
+		log.Err(err).Msg(err.Error())
         return &custom.ExampleListOfPGOfAUser{}, err
     }
 

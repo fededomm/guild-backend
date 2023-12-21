@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
+	"github.com/rs/zerolog/log"
 )
 
 type Rest struct {
@@ -33,6 +34,7 @@ func (r *Rest) GetAll(c *gin.Context) {
 	defer cancel()
 	list, err := r.DB.GetAll(ctx)
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
@@ -55,6 +57,7 @@ func (r *Rest) GetAllPgByUser(c *gin.Context) {
 	param := c.Param("name")
 	list, err := r.DB.GetAllPgForUser(ctx, param)
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
@@ -77,11 +80,13 @@ func (r *Rest) PostUser(c *gin.Context) {
 	defer cancel()
 	user := new(models.User)
 	if err := c.BindJSON(user); err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
 
 	if err := r.DB.InsertUser(ctx, *user); err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
@@ -104,16 +109,19 @@ func (r *Rest) PostPg(c *gin.Context) {
 	defer cancel()
 	pg := new(models.Personaggio)
 	if err := c.BindJSON(pg); err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
 	fetchRank, err := utils.FetchArray(r.DB.DB, rank, "rank")
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
 	fetchClass, err := utils.FetchArray(r.DB.DB, class, "class")
 	if err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
@@ -122,10 +130,12 @@ func (r *Rest) PostPg(c *gin.Context) {
 		Class: fetchClass,
 	}
 	if err := arrToValid.CustomArrayRankClassValidatorGin(pg, r.Val); err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
 	if err := r.DB.InsertPg(ctx, *pg); err != nil {
+		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}

@@ -1,0 +1,10 @@
+version: '3'
+services:
+  guild-be:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: guild-be-image
+    container_name: build-be-container
+    ports:
+      - 8080:8000

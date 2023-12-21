@@ -1,13 +1,17 @@
 package utils
 
-import "github.com/go-playground/validator"
+import (
+	"github.com/go-playground/validator"
+	"github.com/rs/zerolog/log"
+)
 
 type ArrValidation []string
 
-func (r *ArrValidation) StringArrayValidator(fl validator.FieldLevel) bool {
-	rank := fl.Field().String()
-	for _, validRank := range *r {
-		if rank == validRank {
+func (arr *ArrValidation) StringArrayValidator(fl validator.FieldLevel) bool {
+	field := fl.Field().String()
+	for _, validField := range *arr {
+		if field == validField {
+			log.Info().Msgf("valid field: %s", field)
 			return true
 		}
 	}
