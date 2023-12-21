@@ -1,12 +1,17 @@
 package main
 
 import (
-	"guild-be/src/database"
+	_ "embed"
+	"fmt"
 	"guild-be/docs"
+	"guild-be/src/database"
 	"guild-be/src/rest/controller"
 
 	"github.com/rs/zerolog/log"
 )
+
+//go:embed banner.txt
+var banner []byte
 
 func main() {
 	docs.SwaggerInfo.Title = "Swagger Example API"
@@ -15,6 +20,7 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1/"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
+	fmt.Print(string(banner))
 	conf, err := ReadConfig()
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error reading config: %q", err)
