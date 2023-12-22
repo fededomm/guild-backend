@@ -22,7 +22,6 @@ const ConfigurationName = "GUILD_BACKEND"
 
 func ReadConfig() (*config.GlobalConfig, error) {
 
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	configPath := os.Getenv(ConfigFileEnvVar)
 	var cfgContent []byte
 	var err error
@@ -49,7 +48,9 @@ func ReadConfig() (*config.GlobalConfig, error) {
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error unmarshalling config: %q", err)
 	}
-
+	if !appCfg.Log.EnableJSON {
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	}
 	zerolog.SetGlobalLevel(zerolog.Level(appCfg.Log.Level))
 	return &appCfg, nil
 }
