@@ -1,11 +1,13 @@
 package config
 
-import "guild-be/src/database"
-
+import (
+	"guild-be/src/database"
+	"guild-be/src/observability"
+)
 type GlobalConfig struct {
 	Log            LogConfig       `json:"log" yaml:"log" mapstructure:"log"`
 	DataBaseConfig database.DbInfo `json:"database" yaml:"database" mapstructure:"database"`
-	Ranking        []string        `json:"ranking" yaml:"ranking" mapstructure:"ranking"`
+	Observability  observability.Observability   `json:"observability" yaml:"observability" mapstructure:"observability"`
 }
 
 type LogConfig struct {
@@ -25,5 +27,10 @@ var DefaultConfig = GlobalConfig{
 		Password: "postgres",
 		Sslmode:  "disable",
 		Dbname:   "apocalypse",
+	},
+	Observability: observability.Observability{
+		Enable:      false,
+		Endpoint:    "127.0.0.1/4317",
+		ServiceName: "guild-be",
 	},
 }

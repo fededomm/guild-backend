@@ -11,11 +11,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Rest struct {
-	DB  *database.DBService
-	Val *validator.Validate
+	DB    *database.DBService
+	Val   *validator.Validate
+	Trace trace.Tracer
+	Meter metric.Meter
 }
 
 var arrToValid utils.ArrToValid
@@ -29,7 +33,7 @@ var arrToValid utils.ArrToValid
 // @Failure	500	{object}	custom.InternalServerError
 // @Tags		Guild
 // @Router		/guild/ [get]
-func (r *Rest) GetAll(c *gin.Context) {
+func (r *Rest) GetAllUsers(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	list, err := r.DB.GetAll(ctx)
@@ -44,7 +48,7 @@ func (r *Rest) GetAll(c *gin.Context) {
 // @Summary		Get all pg for user
 // @Description	Get all pg for user
 // @Produce		json
-// @Param			name	path		string			true	"name"
+// @Param			name	path		string	true	"name"
 // @Success		200		{object}	custom.Success
 // @Failure		400		{object}	custom.BadRequestError
 // @Failure		404		{object}	custom.NotFoundError
@@ -93,16 +97,16 @@ func (r *Rest) PostUser(c *gin.Context) {
 	c.JSON(201, custom.Created{Code: 201, Message: "Created"})
 }
 
-// @Summary Insert one pg
-// @Description  Insert one pg
-// @Produce json
-// @Param		pg	body		custom.ExampleBodyPg	true	"User"
-// @Success	201		{object}	custom.Created
-// @Failure	400		{object}	custom.BadRequestError
-// @Failure	404		{object}	custom.NotFoundError
-// @Failure	500		{object}	custom.InternalServerError
-// @Tags		Guild
-// @Router /guild/pg [post]
+// @Summary		Insert one pg
+// @Description	Insert one pg
+// @Produce		json
+// @Param			pg	body		custom.ExampleBodyPg	true	"User"
+// @Success		201	{object}	custom.Created
+// @Failure		400	{object}	custom.BadRequestError
+// @Failure		404	{object}	custom.NotFoundError
+// @Failure		500	{object}	custom.InternalServerError
+// @Tags			Guild
+// @Router			/guild/pg [post]
 func (r *Rest) PostPg(c *gin.Context) {
 	var rank, class []string
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
