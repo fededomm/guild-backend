@@ -13,6 +13,7 @@ definitions:
         example: 201
         type: integer
       message:
+        example: Created
         type: string
     type: object
   custom.ExampleBodyPg:
@@ -73,6 +74,7 @@ definitions:
         example: 200
         type: integer
       message:
+        example: Success
         type: string
     type: object
   models.Personaggio:
@@ -177,6 +179,31 @@ paths:
           schema:
             $ref: '#/definitions/custom.InternalServerError'
       summary: Get all pg for user
+      tags:
+      - Guild
+  /guild/{username}:
+    delete:
+      parameters:
+      - description: name
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/custom.Success'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/custom.BadRequestError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/custom.InternalServerError'
       tags:
       - Guild
   /guild/pg:

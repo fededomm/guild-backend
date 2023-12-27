@@ -31,7 +31,7 @@ var arrToValid utils.ArrToValid
 // @Tags		Guild
 // @Router		/guild/ [get]
 func (r *Rest) GetAllUsers(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
 	defer cancel()
 	list, err := r.DB.GetAll(ctx)
 	if err != nil {
@@ -53,7 +53,7 @@ func (r *Rest) GetAllUsers(c *gin.Context) {
 // @Tags			Guild
 // @Router			/guild/{name} [get]
 func (r *Rest) GetAllPgByUser(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
 	defer cancel()
 	param := c.Param("name")
 	list, err := r.DB.GetAllPgForUser(ctx, param)
@@ -77,7 +77,7 @@ func (r *Rest) GetAllPgByUser(c *gin.Context) {
 // @Tags		Guild
 // @Router		/guild/usr [post]
 func (r *Rest) PostUser(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
 	defer cancel()
 	user := new(models.User)
 	if err := c.BindJSON(user); err != nil {
@@ -106,7 +106,7 @@ func (r *Rest) PostUser(c *gin.Context) {
 // @Router			/guild/pg [post]
 func (r *Rest) PostPg(c *gin.Context) {
 	var rank, class []string
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
 	defer cancel()
 	pg := new(models.Personaggio)
 	if err := c.BindJSON(pg); err != nil {
@@ -141,4 +141,26 @@ func (r *Rest) PostPg(c *gin.Context) {
 		return
 	}
 	c.JSON(201, custom.Created{Code: 201, Message: "Created"})
+}
+
+
+// @Summary 
+// @Description 
+// @Produce json
+// @Param			username	path		string	true	"name"
+// @Success 200 {object}  custom.Success
+// @Failure 400 {object}  custom.BadRequestError
+// @Failure 500 {object}  custom.InternalServerError
+// @Tags			Guild
+// @Router /guild/{username} [delete]
+func (r *Rest) DeletePgsAndUser(c *gin.Context){
+	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
+	defer cancel()
+	param := c.Param("username")
+	if err := r.DB.DeleteUserAndPg(ctx, param); err != nil {
+		log.Err(err).Msg(err.Error())
+		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
+		return
+	}
+	c.JSON(200, custom.Success{Code: 200, Message: "Deleted"})
 }

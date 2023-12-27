@@ -24,7 +24,7 @@ func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConf
 		Ctx: &ctx,
 	}
 
-	if !conf.Observability.Enable {
+	if conf.Observability.Enable {
 		trace, err := observability.InitTracer(ctx, conf.Observability.Endpoint, conf.Observability.ServiceName)
 		if err != nil {
 			log.Fatal().Msgf("failed to init a tracer %v", err)
@@ -49,6 +49,7 @@ func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConf
 			guild.POST("/usr", rest.PostUser)
 			guild.POST("/pg", rest.PostPg)
 			guild.GET(":name", rest.GetAllPgByUser)
+			guild.DELETE(":username", rest.DeletePgsAndUser)
 		}
 	}
 

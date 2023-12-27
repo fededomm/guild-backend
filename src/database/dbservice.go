@@ -127,13 +127,11 @@ func (db *DBService) DeleteUserAndPg(ctx context.Context, username string) error
 	if err != nil {
 		return err
 	}
-	err = DeletePg(tx, ctx, models.Personaggio{UserUsername: username})
-	if err != nil {
+	if err = DeletePg(tx, ctx, username); err != nil {
 		tx.Rollback()
 		return err
 	}
-	err = DeleteUser(tx, ctx, models.User{Username: username})
-	if err != nil {
+	if err = DeleteUser(tx, ctx, username); err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -141,26 +139,40 @@ func (db *DBService) DeleteUserAndPg(ctx context.Context, username string) error
 	return nil
 }
 
-func DeletePg(Tx *sql.Tx, ctx context.Context, pg models.Personaggio) error {
-	_, err := Tx.ExecContext(
+func DeletePg(Tx *sql.Tx, ctx context.Context, username string) error {
+	result, err := Tx.ExecContext(
 		ctx,
-		"DELETE FROM Personaggi WHERE Name = $1 AND UserUsername = $2",
-		pg.Name,
-		pg.UserUsername,
+		"DELETE FROM personaggi WHERE UserUsername = (SELECT username FROM users WHERE username = $1) ",
+		username,
 	)
 	if err != nil {
 		return err
 	}
+	rows, err := result.RowsAffected()
+	if rows == 0 {
+		return errors.New("no rows affected")
+	}
+	if err != nil{
+		return err
+	}
+	
 	return nil
 }
 
-func DeleteUser(Tx *sql.Tx, ctx context.Context, user models.User) error {
-	_, err := Tx.ExecContext(
+func DeleteUser(Tx *sql.Tx, ctx context.Context, username string) error {
+	result, err := Tx.ExecContext(
 		ctx,
-		"DELETE FROM Users WHERE Username = $1",
-		user.Username,
+		"DELETE FROM users WHERE Username = (SELECT username FROM users WHERE username = $1)",
+		username,
 	)
 	if err != nil {
+		return err
+	}
+	rows, err := result.RowsAffected()
+	if rows == 0 {
+		return errors.New("no rows affected")
+	}
+	if err != nil{
 		return err
 	}
 	return nil

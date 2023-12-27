@@ -7,4 +7,5 @@ type IRest interface {
 	PostUser(c *gin.Context)
 	PostPg(c *gin.Context)
 	GetAllPgByUser(c *gin.Context)
+	DeletePgsAndUser(c *gin.Context)
 }
