@@ -11,15 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/rs/zerolog/log"
-	"go.opentelemetry.io/otel/metric"
-	"go.opentelemetry.io/otel/trace"
 )
 
 type Rest struct {
-	DB    *database.DBService
-	Val   *validator.Validate
-	Trace trace.Tracer
-	Meter metric.Meter
+	DB  *database.DBService
+	Val *validator.Validate
+	Ctx *context.Context
 }
 
 var arrToValid utils.ArrToValid

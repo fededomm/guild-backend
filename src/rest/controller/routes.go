@@ -8,34 +8,33 @@ import (
 	"guild-be/src/rest/middleware"
 	"guild-be/src/rest/routes"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func Router(db *database.DBService, conf *config.GlobalConfig) {
+func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConfig) {
 
 	var rest routes.IRest = &routes.Rest{
 		DB:  db,
 		Val: validator.New(),
+		Ctx: &ctx,
 	}
 
-	ctx := context.Background()
-	if conf.Observability.Enable == false {
-		// init tracer
+	if !conf.Observability.Enable {
 		trace, err := observability.InitTracer(ctx, conf.Observability.Endpoint, conf.Observability.ServiceName)
 		if err != nil {
-			panic("trace error" + err.Error())
+			log.Fatal().Msgf("failed to init a tracer %v", err)
 		}
 		defer trace(ctx)
 
-		// init metric
 		metric, err := observability.InitMetric(ctx, conf.Observability.Endpoint, conf.Observability.ServiceName)
 		if err != nil {
-			panic("metric error" + err.Error())
+			log.Fatal().Msgf("failed to init a meter %v", err)
 		}
-
 		defer metric(ctx)
 	}
 

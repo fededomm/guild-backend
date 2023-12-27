@@ -121,3 +121,47 @@ func (db *DBService) GetAllPgForUser(ctx context.Context, username string) (*cus
 
 	return &user, nil
 }
+
+func (db *DBService) DeleteUserAndPg(ctx context.Context, username string) error {
+	tx, err := db.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	err = DeletePg(tx, ctx, models.Personaggio{UserUsername: username})
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	err = DeleteUser(tx, ctx, models.User{Username: username})
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func DeletePg(Tx *sql.Tx, ctx context.Context, pg models.Personaggio) error {
+	_, err := Tx.ExecContext(
+		ctx,
+		"DELETE FROM Personaggi WHERE Name = $1 AND UserUsername = $2",
+		pg.Name,
+		pg.UserUsername,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteUser(Tx *sql.Tx, ctx context.Context, user models.User) error {
+	_, err := Tx.ExecContext(
+		ctx,
+		"DELETE FROM Users WHERE Username = $1",
+		user.Username,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
