@@ -1,0 +1,269 @@
+# Custon
+config.yaml
+database/sql
+guild-backend
+
+# File system
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+build/
+dist/
+node_modules/
+vendor/
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Dependencies
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+*.swp
+*.lock
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages
+# It's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.idea_modules/
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+*.sublime-*
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# JetBrains
+*.idea/
+*.iml
+*.iws
+
+# NetBeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+*.nbattrs
+
+# Eclipse
+.classpath
+.project
+.settings/
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+
+# Xcode
+*.pbxproj
+*.xcworkspace/
+*.xcuserdata/
+*.xcodeproj/
+*.xccheckout
+*.xcscmblueprint
+
+# Android Studio
+*.iml
+.idea/
+.gradle/
+local.properties
+/.externalNativeBuild
+
+# Flutter/Dart/Pub
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+
+# WebStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Visual Studio
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.vcproj
+*.vcproj.*
+*.dotnet-test-nunit.properties
+
+# Xamarin
+*.sln
+*.csproj
+*.xproj
+*.userprefs
+*.lock.json
+*.nuget.props
+*.nuget.targets
+
+# Unity3D
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+
+# NuGet
+*.nuget/
+*.nupkg
+*.snk
+
+# Miscellaneous
+*.bak
+*.cache
+*.db
+*.db-shm
+*.db-wal
+*.hprof
+*.in
+*.log
+*.old
+*.pid
+*.seed
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.swp
+*.tmp
+*.tmp.*
+*.tmp/
+*.tmp/**/*
+!*.tmp/*.tmp
+!*.tmp/**/*
+
+
+# Ignore all .env files in the root directory and all subdirectories
+**/.env
+
+# Ignore all .env.local files in the root directory and all subdirectories
+**/.env.local
+
+# Ignore all .env.*.local files in the root directory and all subdirectories
+**/.env.*.local
+
+# Ignore all .env.development.local files in the root directory and all subdirectories
+**/.env.development.local
+
+# Ignore all .env.test.local files in the root directory and all subdirectories
+**/.env.test.local
+
+# Ignore all .env.production.local files in the root directory and all subdirectories
+**/.env.production.local
+
+# Ignore all .pnp files in the root directory and all subdirectories
+**/.pnp
+
+# Ignore all .pnp.js files in the root directory and all subdirectories
+**/.pnp.js
+
+# Ignore all coverage directories in the root directory and all subdirectories
+**/coverage
+
+# Ignore all .vscode directories in the root directory and all subdirectories
+**/.vscode
+
+# Ignore all .idea directories in the root directory and all subdirectories
+**/.idea
+
+# Ignore all .DS_Store files in the root directory and all subdirectories
+**/.DS_Store
+
+# Ignore all .swp files in the root directory and all subdirectories
+**/*.swp
+
+# Ignore all .lock files in the root directory and all subdirectories
+**/*.lock
