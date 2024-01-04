@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/otel"
 )
 
 type Rest struct {
@@ -20,6 +21,8 @@ type Rest struct {
 }
 
 var arrToValid utils.ArrToValid
+var trace = otel.Tracer("guild-tracer")
+var meter = otel.Meter("guild-meter")
 
 // @Summary	Get all users
 // @Description
@@ -32,6 +35,8 @@ var arrToValid utils.ArrToValid
 // @Router		/guild/ [get]
 func (r *Rest) GetAllUsers(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
+	_, span := trace.Start(ctx, "GetAllUsers")
+	defer span.End()
 	defer cancel()
 	list, err := r.DB.GetAll(ctx)
 	if err != nil {
@@ -54,6 +59,8 @@ func (r *Rest) GetAllUsers(c *gin.Context) {
 // @Router			/guild/{name} [get]
 func (r *Rest) GetAllPgByUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
+	_, span := trace.Start(ctx, "GetAllPgByUser")
+	defer span.End()
 	defer cancel()
 	param := c.Param("name")
 	list, err := r.DB.GetAllPgForUser(ctx, param)
@@ -63,6 +70,7 @@ func (r *Rest) GetAllPgByUser(c *gin.Context) {
 		return
 	}
 	c.JSON(200, list)
+	
 }
 
 // @Summary	Insert one user
