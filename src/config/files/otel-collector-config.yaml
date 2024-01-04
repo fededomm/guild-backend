@@ -8,6 +8,8 @@ exporters:
     endpoint: tempo:4317
     tls:
       insecure: true
+  logging:
+    loglevel: debug
 
   prometheus:
     endpoint: 0.0.0.0:8889
@@ -26,7 +28,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [otlp/tempo]
+      exporters: [otlp/tempo, logging]
     metrics:
       receivers: [ otlp ]
       processors: [ batch ]

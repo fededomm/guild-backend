@@ -35,7 +35,8 @@ var meter = otel.Meter("guild-meter")
 // @Router		/guild/ [get]
 func (r *Rest) GetAllUsers(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
-	
+	_, span := trace.Start(ctx, "GetAllUsers")
+	defer span.End()
 	defer cancel()
 	list, err := r.DB.GetAll(ctx)
 	if err != nil {
@@ -59,6 +60,7 @@ func (r *Rest) GetAllUsers(c *gin.Context) {
 func (r *Rest) GetAllPgByUser(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
 	_, span := trace.Start(ctx, "GetAllPgByUser")
+	defer span.End()
 	defer cancel()
 	param := c.Param("name")
 	list, err := r.DB.GetAllPgForUser(ctx, param)
@@ -68,7 +70,7 @@ func (r *Rest) GetAllPgByUser(c *gin.Context) {
 		return
 	}
 	c.JSON(200, list)
-	span.End()
+	
 }
 
 // @Summary	Insert one user

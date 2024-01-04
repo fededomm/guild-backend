@@ -27,7 +27,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msgf("Error reading config: %q", err)
 	}
-
+	log.Debug().Msgf("Config: %+v\n", conf)
 	dbService := database.DBService{
 		DB: database.Init(&conf.DataBaseConfig),
 	}

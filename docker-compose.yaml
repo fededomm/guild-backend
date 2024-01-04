@@ -3,7 +3,7 @@ services:
   guild-be:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     image: guild-be-image
     container_name: build-be-container
     ports:
@@ -16,7 +16,7 @@ services:
     command:
       - '--config=/etc/otel-collector-config.yaml'
     volumes:
-      - './config/otel-collector-config.yaml:/etc/otel-collector-config.yaml'
+      - './src/config/files/otel-collector-config.yaml:/etc/otel-collector-config.yaml'
     ports:
       - '1888:1888'   # pprof extension
       - '8888:8888'   # Prometheus metrics exposed by the collector
@@ -32,7 +32,7 @@ services:
     command:
       - '--config.file=/etc/prometheus.yaml'
     volumes:
-      - './config/prometheus.yaml:/etc/prometheus.yaml'
+      - './src/config/files/prometheus.yaml:/etc/prometheus.yaml'
     ports:
       - '9090:9090'
 
@@ -42,7 +42,7 @@ services:
     container_name: 'grafana'
     restart: 'always'
     volumes:
-      - ./config/grafana/provisioning/datasources/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
+      - ./src/config/files/grafana/provisioning/datasources/datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml
     ports:
       - '3000:3000'
     environment:
@@ -54,5 +54,5 @@ services:
     container_name: 'tempo'
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ./config/tempo.yaml:/etc/tempo.yaml
-      - ./config/tempo-data:/tmp/tempo
+      - ./src/config/files/tempo.yaml:/etc/tempo.yaml
+      - ./src/config/files/tempo-data:/tmp/tempo
