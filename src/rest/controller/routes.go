@@ -54,10 +54,13 @@ func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConf
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	router.GET("/heathcheck", func(c *gin.Context) {
+	router.GET(conf.App.Server.HealthCheckEndpoint, func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "Alive!",
 		})
 	})
-	router.Run(":8000")
+	err := router.Run(conf.App.Server.Host + conf.App.Server.Port)
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to start server")
+	}
 }
