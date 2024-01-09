@@ -17,7 +17,6 @@ import (
 type Rest struct {
 	DB  *database.DBService
 	Val *validator.Validate
-	Ctx *context.Context
 }
 
 var arrToValid utils.ArrToValid
@@ -34,11 +33,11 @@ var meter = otel.Meter("guild-meter")
 // @Tags		Guild
 // @Router		/guild/ [get]
 func (r *Rest) GetAllUsers(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
-	_, span := trace.Start(ctx, "GetAllUsers")
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	spanCtx, span := trace.Start(ctx, "Get_All_Users")
 	defer span.End()
 	defer cancel()
-	list, err := r.DB.GetAll(ctx)
+	list, err := r.DB.GetAll(spanCtx)
 	if err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
@@ -58,12 +57,12 @@ func (r *Rest) GetAllUsers(c *gin.Context) {
 // @Tags			Guild
 // @Router			/guild/{name} [get]
 func (r *Rest) GetAllPgByUser(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
-	_, span := trace.Start(ctx, "GetAllPgByUser")
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	spanCtx, span := trace.Start(ctx, "Get_All_Pg_ByUser")
 	defer span.End()
 	defer cancel()
 	param := c.Param("name")
-	list, err := r.DB.GetAllPgForUser(ctx, param)
+	list, err := r.DB.GetAllPgForUser(spanCtx, param)
 	if err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
@@ -85,7 +84,9 @@ func (r *Rest) GetAllPgByUser(c *gin.Context) {
 // @Tags		Guild
 // @Router		/guild/usr [post]
 func (r *Rest) PostUser(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
+	spanCtx, span := trace.Start(ctx, "Post_User")
+	defer span.End()
 	defer cancel()
 	user := new(models.User)
 	if err := c.BindJSON(user); err != nil {
@@ -94,7 +95,7 @@ func (r *Rest) PostUser(c *gin.Context) {
 		return
 	}
 
-	if err := r.DB.InsertUser(ctx, *user); err != nil {
+	if err := r.DB.InsertUser(spanCtx, *user); err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
@@ -114,8 +115,10 @@ func (r *Rest) PostUser(c *gin.Context) {
 // @Router			/guild/pg [post]
 func (r *Rest) PostPg(c *gin.Context) {
 	var rank, class []string
-	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
+	spanCtx, span := trace.Start(ctx, "Post_Pg")
+	defer span.End()
 	pg := new(models.Personaggio)
 	if err := c.BindJSON(pg); err != nil {
 		log.Err(err).Msg(err.Error())
@@ -143,7 +146,7 @@ func (r *Rest) PostPg(c *gin.Context) {
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
-	if err := r.DB.InsertPg(ctx, *pg); err != nil {
+	if err := r.DB.InsertPg(spanCtx, *pg); err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
@@ -162,10 +165,12 @@ func (r *Rest) PostPg(c *gin.Context) {
 // @Tags			Guild
 // @Router /guild/{username} [delete]
 func (r *Rest) DeletePgsAndUser(c *gin.Context){
-	ctx, cancel := context.WithTimeout(*r.Ctx, 5*time.Second)
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
+	spanCtx, span := trace.Start(ctx, "Delete_Pg_and_User")
+	defer span.End()
 	param := c.Param("username")
-	if err := r.DB.DeleteUserAndPg(ctx, param); err != nil {
+	if err := r.DB.DeleteUserAndPg(spanCtx, param); err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return

@@ -9,6 +9,7 @@ import (
 	"guild-be/src/rest/routes"
 
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
@@ -21,7 +22,6 @@ func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConf
 	var rest routes.IRest = &routes.Rest{
 		DB:  db,
 		Val: validator.New(),
-		Ctx: &ctx,
 	}
 
 	if conf.Observability.Enable {
@@ -40,6 +40,7 @@ func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConf
 
 	router := gin.Default()
 	router.Use(middleware.CORSMiddleware())
+	router.Use(otelgin.Middleware(conf.Observability.ServiceName))
 
 	v1 := router.Group("/api/v1")
 	{

@@ -7,6 +7,8 @@ import (
 	"errors"
 	"guild-be/src/custom"
 	"guild-be/src/models"
+
+	"go.opentelemetry.io/otel"
 )
 
 const (
@@ -25,7 +27,12 @@ type DBService struct {
 	DB     *sql.DB
 }
 
+var trace = otel.Tracer("db-guild-tracer")
+var meter = otel.Meter("db-guild-meter")
+
 func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
+	_, span := trace.Start(ctx, "DB_Level_Insert_User")
+	defer span.End()
 	_, err := db.DB.QueryContext(ctx, INSERT_USER, user.Name, user.Surname, user.Username, user.BattleTag)
 	if err != nil {
 		return err
@@ -35,6 +42,8 @@ func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
 
 func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error {
 	var userName string
+	_, span := trace.Start(ctx, "DB_Level_Insert_Pg")
+	defer span.End()
 	err := db.DB.QueryRowContext(ctx, SELECT_USER_ID, pg.UserUsername).Scan(&userName)
 	if err != nil && err != sql.ErrNoRows {
 
@@ -63,6 +72,8 @@ func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error 
 func (db *DBService) GetAll(ctx context.Context) (*[]custom.ExampleBodyUser, error) {
 	var users []custom.ExampleBodyUser
 	var user custom.ExampleBodyUser
+	_, span := trace.Start(ctx, "DB_Level_Get_All")
+	defer span.End()
 	rows, err := db.DB.QueryContext(ctx, GET_ALL)
 	if err != nil {
 
@@ -85,6 +96,8 @@ func (db *DBService) GetAll(ctx context.Context) (*[]custom.ExampleBodyUser, err
 }
 
 func (db *DBService) GetAllPgForUser(ctx context.Context, username string) (*custom.ExampleListOfPGOfAUser, error) {
+	_, span := trace.Start(ctx, "DB_Level_Get_All_Pg_For_User")
+	defer span.End()
 	rows, err := db.DB.QueryContext(ctx, GET_ALL_PG_FOREACH_USER, username)
 	if err != nil {
 
@@ -123,6 +136,8 @@ func (db *DBService) GetAllPgForUser(ctx context.Context, username string) (*cus
 }
 
 func (db *DBService) DeleteUserAndPg(ctx context.Context, username string) error {
+	_, span := trace.Start(ctx, "DB_Level_Delete_User_And_Pg")
+	defer span.End()
 	tx, err := db.DB.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -140,6 +155,8 @@ func (db *DBService) DeleteUserAndPg(ctx context.Context, username string) error
 }
 
 func DeletePg(Tx *sql.Tx, ctx context.Context, username string) error {
+	_, span := trace.Start(ctx, "DB_Level_Delete_Pg")
+	defer span.End()
 	result, err := Tx.ExecContext(
 		ctx,
 		"DELETE FROM personaggi WHERE UserUsername = (SELECT username FROM users WHERE username = $1) ",
@@ -160,6 +177,8 @@ func DeletePg(Tx *sql.Tx, ctx context.Context, username string) error {
 }
 
 func DeleteUser(Tx *sql.Tx, ctx context.Context, username string) error {
+	_, span := trace.Start(ctx, "DB_Level_Delete_User")
+	defer span.End()
 	result, err := Tx.ExecContext(
 		ctx,
 		"DELETE FROM users WHERE Username = (SELECT username FROM users WHERE username = $1)",
