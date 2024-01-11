@@ -5,6 +5,7 @@ import (
 	"guild-be/src/custom"
 	"guild-be/src/database"
 	"guild-be/src/models"
+	"guild-be/src/observability"
 	"guild-be/src/rest/utils"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 	"github.com/go-playground/validator"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/metric"
 )
 
 type Rest struct {
@@ -19,9 +21,13 @@ type Rest struct {
 	Val *validator.Validate
 }
 
-var arrToValid utils.ArrToValid
-var trace = otel.Tracer("guild-tracer")
-var meter = otel.Meter("guild-meter")
+var (
+	arrToValid utils.ArrToValid
+	trace = otel.Tracer("guild-tracer")
+	meter = otel.Meter("guild-meter")
+	ApiMetrics metric.Meter
+)
+
 
 // @Summary	Get all users
 // @Description
@@ -37,12 +43,19 @@ func (r *Rest) GetAllUsers(c *gin.Context) {
 	spanCtx, span := trace.Start(ctx, "Get_All_Users")
 	defer span.End()
 	defer cancel()
+	counter, err := observability.Counter("Get_All_Users", "Get all users", meter)
+	if err != nil {
+		log.Err(err).Msg(err.Error())
+		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
+		return
+	}
 	list, err := r.DB.GetAll(spanCtx)
 	if err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
+	counter.Add(ctx, 1)
 	c.JSON(200, list)
 }
 

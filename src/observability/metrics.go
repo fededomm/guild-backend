@@ -2,14 +2,16 @@ package observability
 
 import (
 	"context"
+	"time"
+
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlpmetric/otlpmetricgrpc"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"time"
 )
 
-func InitMetric(ctx context.Context, endPoint string, serviceName string) (func(context.Context) error, error) {
+// Initilize a meter provider and set it as the global meter provider
+func InitMeter(ctx context.Context, endPoint string, serviceName string) (func(context.Context) error, error) {
 	metricExporter, err := otlpmetricgrpc.New(ctx,
 		otlpmetricgrpc.WithInsecure(),
 		otlpmetricgrpc.WithEndpoint(endPoint),
@@ -17,7 +19,7 @@ func InitMetric(ctx context.Context, endPoint string, serviceName string) (func(
 	if err != nil {
 		return nil, err
 	}
-	
+
 	resource, err := newResource(serviceName)
 	if err != nil {
 		return nil, err
@@ -32,7 +34,7 @@ func InitMetric(ctx context.Context, endPoint string, serviceName string) (func(
 	return meterProvider.Shutdown, nil
 }
 
-func newMeterProvider(ctx context.Context, exp *otlpmetricgrpc.Exporter,endPoint string, res *resource.Resource) (*metric.MeterProvider, error) {
+func newMeterProvider(ctx context.Context, exp *otlpmetricgrpc.Exporter, endPoint string, res *resource.Resource) (*metric.MeterProvider, error) {
 	meterProvider := metric.NewMeterProvider(
 		metric.WithResource(res),
 		metric.WithReader(metric.NewPeriodicReader(

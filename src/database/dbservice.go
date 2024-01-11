@@ -27,8 +27,10 @@ type DBService struct {
 	DB     *sql.DB
 }
 
-var trace = otel.Tracer("db-guild-tracer")
-var meter = otel.Meter("db-guild-meter")
+var ( 
+	trace = otel.Tracer("db-guild-tracer")
+	meter = otel.Meter("db-guild-meter")
+)
 
 func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
 	_, span := trace.Start(ctx, "DB_Level_Insert_User")

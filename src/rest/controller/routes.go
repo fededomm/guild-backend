@@ -31,7 +31,7 @@ func Router(ctx context.Context, db *database.DBService, conf *config.GlobalConf
 		}
 		defer trace(ctx)
 
-		metric, err := observability.InitMetric(ctx, conf.Observability.Endpoint, conf.Observability.ServiceName)
+		metric, err := observability.InitMeter(ctx, conf.Observability.Endpoint, conf.Observability.ServiceName)
 		if err != nil {
 			log.Fatal().Msgf("failed to init a meter %v", err)
 		}
