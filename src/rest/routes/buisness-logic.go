@@ -138,13 +138,13 @@ func (r *Rest) PostPg(c *gin.Context) {
 		c.JSON(400, custom.BadRequestError{Code: 400, Message: err.Error()})
 		return
 	}
-	fetchRank, err := utils.FetchArrayByName(r.DB.DB, rank, "rank")
+	fetchRank, err := utils.FetchArrayByName(spanCtx, r.DB.DB, rank, "rank")
 	if err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})
 		return
 	}
-	fetchClass, err := utils.FetchArrayByName(r.DB.DB, class, "class")
+	fetchClass, err := utils.FetchArrayByName(spanCtx, r.DB.DB, class, "class")
 	if err != nil {
 		log.Err(err).Msg(err.Error())
 		c.JSON(500, custom.InternalServerError{Code: 500, Message: err.Error()})

@@ -1,11 +1,18 @@
 package utils
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+
+	"go.opentelemetry.io/otel"
 )
 
-func FetchArrayByName(db *sql.DB, fetchArr []string, tablename string) ([]string, error) {
+var trace = otel.Tracer("db-utils-guild-tracer")
+
+func FetchArrayByName(ctx context.Context,db *sql.DB, fetchArr []string, tablename string) ([]string, error) {
+	_, span := trace.Start(ctx, "FetchArrayByName")
+	defer span.End()
 	query := fmt.Sprintf("SELECT name FROM %s", tablename)
 	rows, err := db.Query(query)
 	if err != nil {

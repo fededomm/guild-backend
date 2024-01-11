@@ -33,9 +33,9 @@ var (
 )
 
 func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
-	_, span := trace.Start(ctx, "DB_Level_Insert_User")
+	spanCtx, span := trace.Start(ctx, "DB_Level_Insert_User")
 	defer span.End()
-	_, err := db.DB.QueryContext(ctx, INSERT_USER, user.Name, user.Surname, user.Username, user.BattleTag)
+	_, err := db.DB.QueryContext(spanCtx, INSERT_USER, user.Name, user.Surname, user.Username, user.BattleTag)
 	if err != nil {
 		return err
 	}
@@ -44,9 +44,9 @@ func (db *DBService) InsertUser(ctx context.Context, user models.User) error {
 
 func (db *DBService) InsertPg(ctx context.Context, pg models.Personaggio) error {
 	var userName string
-	_, span := trace.Start(ctx, "DB_Level_Insert_Pg")
+	spanCtx, span := trace.Start(ctx, "DB_Level_Insert_Pg")
 	defer span.End()
-	err := db.DB.QueryRowContext(ctx, SELECT_USER_ID, pg.UserUsername).Scan(&userName)
+	err := db.DB.QueryRowContext(spanCtx, SELECT_USER_ID, pg.UserUsername).Scan(&userName)
 	if err != nil && err != sql.ErrNoRows {
 
 		return err

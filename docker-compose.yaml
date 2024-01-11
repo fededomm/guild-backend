@@ -48,7 +48,7 @@ services:
     environment:
       - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
 
-  # Grafana Tempo
+  # Tempo
   tempo:
     image: 'grafana/tempo:r119-fcd31bd'
     container_name: 'tempo'
