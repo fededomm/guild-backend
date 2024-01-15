@@ -32,3 +32,18 @@ func Histogram(name string, desc string, meter metric.Meter) (metric.Int64Histog
 	}
 	return ApiHistogram, nil 
 }
+
+func UpAndDownCounter(name string, desc string, meter metric.Meter) (metric.Int64UpDownCounter, error){
+	var err error
+	ApiUpDownCounter, err := meter.Int64UpDownCounter(
+		name , 
+		metric.WithDescription(desc),
+		metric.WithUnit("{API}"),
+	)
+	if err != nil {
+		log.Err(err).Msg(err.Error())
+		return nil, err 
+	}
+	return ApiUpDownCounter, nil 
+}
+
